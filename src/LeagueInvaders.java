@@ -1,5 +1,3 @@
-import java.awt.Font;
-
 import javax.swing.JFrame;
 
 public class LeagueInvaders {
@@ -19,6 +17,7 @@ public LeagueInvaders() {
 	frame.add(gamePanel);
 	frame.setSize(WIDTH, HEIGHT);
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	frame.addKeyListener(gamePanel);
 	frame.setVisible(true);
 }
 
