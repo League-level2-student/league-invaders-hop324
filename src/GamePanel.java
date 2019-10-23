@@ -5,21 +5,51 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel
 	implements ActionListener, KeyListener {
+	public static BufferedImage image;
+	public static boolean needImage = true;
+	public static boolean gotImage = false;	
 Font titleFont = new Font("Arial", Font.PLAIN, 48);
 Font otherFont = new Font("TimesNewRoman", Font.PLAIN, 22);
 
+Timer timmy;
+
+
 Rocketman rocket = new Rocketman(250, 700, 50, 50);
+
+ObjectManager reee = new ObjectManager(rocket);
+
+void startGame() {
+	timmy = new Timer(1000 , reee);
+    timmy.start();
+}
+
+void loadImage(String imageFile) {
+    if (needImage) {
+        try {
+            image = ImageIO.read(this.getClass().getResourceAsStream(imageFile));
+	    gotImage = true;
+        } catch (Exception e) {
+            
+        }
+        needImage = false;
+    }
+}
 
 GamePanel() {
 	Timer frameDraw = new Timer(1000/60, this);
 	frameDraw.start();
+	if (needImage) {
+	    loadImage ("download-1.jpg");
+	}
 }
 
 @Override
@@ -40,7 +70,9 @@ int currentState = MENU;
 
 
 void updateMenuState() {  }
-void updateGameState() {  }
+void updateGameState() {
+	reee.update();
+}
 void updateEndState()  {  }
 
 void drawMenuState(Graphics g) { 
@@ -53,10 +85,15 @@ void drawMenuState(Graphics g) {
 	g.drawString("Press SHREK to start", 100, 400);
 	g.drawString("Press DONKEY for instructions", 100, 600);
 }
-void drawGameState(Graphics g) { 
-	g.setColor(Color.BLACK);
-	g.fillRect(0,  0,  LeagueInvaders.WIDTH, LeagueInvaders.HEIGHT);
-	rocket.draw(g);
+void drawGameState(Graphics g) {
+	if (gotImage) {
+	g.drawImage(image, 0, 0, LeagueInvaders.WIDTH, LeagueInvaders.HEIGHT, null);
+	} 
+	else { 
+		g.setColor(Color.BLACK);
+		g.fillRect(0,  0,  LeagueInvaders.WIDTH, LeagueInvaders.HEIGHT);
+	}
+	reee.draw(g);
 }
 void drawEndState(Graphics g)  { 
 	g.setColor(Color.RED);
@@ -94,8 +131,20 @@ public void keyPressed(KeyEvent e) {
 	    } 
 	    else {
 	        currentState++;
+	        if(currentState == GAME) {
+	        	startGame();
+	        }
+	        else if(currentState == END) {
+		        timmy.stop();
+	        }
 	    }
 	}	
+	
+	if(e.getKeyCode()==KeyEvent.VK_SPACE && currentState == GAME) {
+		reee.addProjectile(rocket.getProjectile());
+
+	}
+	
 	if (e.getKeyCode()==KeyEvent.VK_UP) {
 	    rocket.up();
 	}
