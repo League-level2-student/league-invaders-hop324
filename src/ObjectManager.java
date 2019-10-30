@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ObjectManager implements ActionListener {
+	int score = 0;
 Rocketman Elton;
 ArrayList<Projectile> projectile = new ArrayList<Projectile>();
 ArrayList<Alien> aliens = new ArrayList<Alien>();
@@ -37,7 +38,31 @@ void purgeObjects() {
 	}	
 }
 
+void checkCollision() {
+	for(int c = 0; c < aliens.size(); c++) {
+	if(Elton.collisionBox.intersects(aliens.get(c).collisionBox)) {
+	Elton.isActive = false;
+	aliens.get(c).isActive = false;
+	}
+	}
+	for(int i = 0; i < aliens.size(); i++) {
+		for(int b = 0; b < projectile.size(); b++) {
+			if(aliens.get(i).collisionBox.intersects(projectile.get(b).collisionBox)) {
+			 aliens.get(i).isActive = false;
+			 projectile.get(b).isActive = false;
+			 score++;
+			}
+		}
+	}
+	
+}
+
+public int getScore() {
+	return score;
+}
+
 public void update() {
+	Elton.update();
 	for(int i = 0; i < aliens.size(); i ++) {
 		aliens.get(i).update();
 		if(aliens.get(i).height > LeagueInvaders.HEIGHT) {
@@ -50,6 +75,8 @@ public void update() {
 			projectile.get(i).isActive = false;
 		}
 	}
+	checkCollision();
+	purgeObjects();
 }
 
 void addProjectile(Projectile AHH) {

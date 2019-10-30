@@ -72,6 +72,9 @@ int currentState = MENU;
 void updateMenuState() {  }
 void updateGameState() {
 	reee.update();
+	if(!rocket.isActive) {
+		currentState = END;
+	}
 }
 void updateEndState()  {  }
 
@@ -94,13 +97,16 @@ void drawGameState(Graphics g) {
 		g.fillRect(0,  0,  LeagueInvaders.WIDTH, LeagueInvaders.HEIGHT);
 	}
 	reee.draw(g);
+	int scawr = reee.getScore();
+	g.setColor(Color.WHITE);
+	g.drawString(Integer.toString(scawr), 485, 10);
 }
 void drawEndState(Graphics g)  { 
 	g.setColor(Color.RED);
 	g.fillRect(0,  0,  LeagueInvaders.WIDTH, LeagueInvaders.HEIGHT);
 	g.setFont(titleFont);
 	g.setColor(Color.BLACK);
-	g.drawString("   O   N   I   O   N   S   ", 100, 200);
+	g.drawString("   O   N   I   O   N   S   ", 50, 200);
 	g.setFont(otherFont);
 	g.drawString("Press ONION to restart", 100, 400);
 	g.drawString("Press DONKEY for instructions", 100, 600);
@@ -125,6 +131,11 @@ public void keyTyped(KeyEvent e) {
 
 @Override
 public void keyPressed(KeyEvent e) {
+	if(currentState == END) {
+        rocket = new Rocketman(250, 700, 50, 50);
+
+        reee = new ObjectManager(rocket);
+	}
 	if (e.getKeyCode()==KeyEvent.VK_ENTER) {
 	    if (currentState == END) {
 	        currentState = MENU;
@@ -134,6 +145,7 @@ public void keyPressed(KeyEvent e) {
 	        if(currentState == GAME) {
 	        	startGame();
 	        }
+	        
 	        else if(currentState == END) {
 		        timmy.stop();
 	        }
